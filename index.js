@@ -80,6 +80,9 @@ app.post('/register', async (req, res) => {
     newUser.verificationToken = crypto.randomBytes(20).toString('hex');
     await newUser.save();
     sendVerificationEmail(newUser.email, newUser.verificationToken);
+    res
+      .status(200)
+      .json({ status: 'Success', message: 'Registration successful' });
   } catch (error) {
     console.log('Error registering user', error);
     res.status(500).json({ message: 'Registration failed' });
