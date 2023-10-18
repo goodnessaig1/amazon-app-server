@@ -108,10 +108,9 @@ app.post('/register', async (req, res) => {
 });
 
 //endpoint to verify the email
-app.get('/verify:token', async (req, res) => {
+app.get('/verify/:token', async (req, res) => {
   try {
     const token = req.params.token;
-
     const user = await User.findOne({ verificationToken: token });
     if (!user) {
       return res.status(404).json({ message: 'Invalid verification token' });
