@@ -47,25 +47,39 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 
-const sendVerificationEmail = async (email, verificationToken) => {
-  //Nodemailer transport
+const sendVerificationEmail = async (email, verificationToken, name) => {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
       user: 'goodness6337@gmail.com',
-      pass: 'xpqxahgsviyymzkf',
+      pass: 'wzcwjdfzyklfvkri',
     },
   });
+
   const mailOptions = {
     from: 'amazon.com',
     to: email,
-    subject: 'Email Vefification',
-    text: `Please click the following link to verify your email : http://localhost:8080/verify/${verificationToken} `,
+    subject: 'Email Verification',
+    text: `Confirm Your Email Address for Amazon Ecommerce App
+
+Dear ${name},
+
+Thank you for registering with our ecommerce app! To complete your registration and enjoy seamless shopping, please click the verification link below to confirm your email address:
+
+https://amazon-api-9ruj.onrender.com/verify/${verificationToken}
+
+If you did not create an account with us, please disregard this email. We can't wait to have you explore our wide range of products and exciting offers!
+
+Best regards,
+Amazon clone Team by Goodness Aigbokhan `,
   };
+
   try {
     await transporter.sendMail(mailOptions);
+
+    console.log('Verification email sent successfully');
   } catch (error) {
-    console.log('Error sending verification email', error);
+    console.error('Error sending verification email:', error);
   }
 };
 
@@ -79,7 +93,11 @@ app.post('/register', async (req, res) => {
     const newUser = new User({ name, email, password });
     newUser.verificationToken = crypto.randomBytes(20).toString('hex');
     await newUser.save();
-    sendVerificationEmail(newUser.email, newUser.verificationToken);
+    sendVerificationEmail(
+      newUser.email,
+      newUser.verificationToken,
+      newUser.name,
+    );
     res
       .status(200)
       .json({ status: 'Success', message: 'Registration successful' });
